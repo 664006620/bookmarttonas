@@ -1,0 +1,24 @@
+#!/bin/sh /etc/rc.common
+# iStoreOS / OpenWrt 开机自启脚本 (procd)
+# 用法: 上传为 /etc/init.d/saveurl 后执行:
+#   chmod +x /etc/init.d/saveurl
+#   /etc/init.d/saveurl enable      # 设为开机启动
+#   /etc/init.d/saveurl start       # 立即启动
+# 查看日志: logread | grep saveurl
+
+USE_PROCD=1
+START=99
+STOP=10
+
+start_service() {
+    procd_open_instance
+    # ↓↓↓ 把下面路径改成你实际放 server.py 的位置 ↓↓↓
+    procd_set_param command /usr/bin/python3 /mnt/sata6-2/Via/server.py
+    # ↓↓↓ 把密码改成你自己的（需和用户脚本 TOKEN 一致）↓↓↓
+    procd_set_param env TOKEN="你的强密码"
+    procd_set_param env PORT="8000"
+    procd_set_param stdout 1
+    procd_set_param stderr 1
+    procd_set_param respawn          # 意外退出会自动重启
+    procd_close_instance
+}
